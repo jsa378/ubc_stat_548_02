@@ -1,0 +1,104 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Template for STAT 548 Qualifying Paper Report
+% Author: Ben Bloem-Reddy <benbr@stat.ubc.ca>
+% Date: Aug. 21, 2019
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Note: You will get an empty bibliography warning when compiling until you include a citation.
+
+\documentclass[10pt]{article}
+\input{header}
+\input{defs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% your title/author/date information go here
+\title{\LaTeX\ Template for STAT 548 Qualifying Paper Report} % replace with your title
+\author{Benjamin Bloem-Reddy} % replace with your name
+\date{\today} % replace with your submission date
+
+\bibliography{../../ref/qp-bib.bib} % add the title of your bibliography file
+
+% start of document
+\begin{document}
+
+\maketitle
+
+\section{preliminary notes}
+
+\subsection{abstract and introduction}
+
+\begin{itemize}
+    \item use gaussian processes to learn unknown functions ``in a manner that permits one to utilize prior information about their properties''
+    \item the idea appears to be that we want a gp for when the input space is an undirected graph
+    \item and the ``spde'' characterization of matern gps leads to a gp on undirected graphs that is easy to work with
+    \item i think gps are characterized by their mean and (more importantly) covariance functions\footnote{I think covariance function and kernel are the same thing?}
+    \item ``predicting street congestion with a road network''; this is sort of like predicting a cost or constraint, isn't it?
+    \item ``we study GPs whose inputs or outputs are indexed by the vertices of an undirected graph, where each edge between adjacent nodes is assigned a positive weight''
+    \item gaussian markov random fields (gmrf) are relevant here
+    \item it seems that, for graphs with finitely many nodes, the covariance functions can be viewed as ``parameterized structured covariance matrices that encode dependence between vertices.''
+    \item can we work with infinite graphs, or just finite ones?
+    \item so there have been explorations of kernels for graph gps before, but apparently this attempt to port over a type of matern (which is commonly used for $\mathbb R^n$) for graphs is new?
+    \item in ``normal'' contexts, you can define a matern kernel via spde representation; that appears to be the approach taken for graph gps here
+    \item as an alternative to the spde derivation/version, there is also a fourier feature approach
+    \item graph gp matern kernels converge to euclidean gp matern kernels when the graph becomes more dense?
+\end{itemize}
+
+\subsection{gaussian processes}
+
+\begin{itemize}
+    \item do i need to worry about the sigma field on the space of functions? I am guessing not for the purposes of this project
+    \item explanation of gp is a bit confusing. $\bm x \in X^n$ is one point $(x_1, \dots, x_n)$, right? and then $f(\bm x) = f(x_1, \dots, x_n)$ is a real number, right? do they mean $\left( f(x_1), \dots, f(x_n) \right)$?
+    \item maybe put anothe rway, i don't understand how the given description jives with the regular notion that a gp is a sequence of rando mvariables such that all finite collections are multivariate-normal distributed
+    \item anyway, we can assume the mean function $\bm mu$ is zero, so forget about that; we focus on the kernel $\bm{K_{xx}}$
+    \item so the intuitive idea seems to be that we start with some gp (our ``prior'' gp?), and then given our data, we get a new, updated, ``posterior'' gp, given the data?
+    \item i guess it's worth noting that both (1) and (2) involve matrix inversion, which I think is computationall expensive
+    \item ``mean-square differentiability'' seems to be some kind of stochastic process notion of a derivative, which is probably not relevant for this project
+    \item from \href{https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function}{Wikipedia}, it seems that matern kernels are functions of the distance between pairs of points.
+    \item matern gps can be put on the sphere and torus
+    \item 
+\end{itemize}
+
+\subsubsection{gps on graphs}
+
+\begin{itemize}
+    \item i guess if a a matern kernel for a regular gp is a function of the distance between two points, then to create a matern kernel for a graph gp, we need some kind of notion of distance on the graph.
+    \item i guess if we take a step back, then if a gaussian process ``is'' in some sense a distribution on a space of function, then we can ask: functions from what to what? If $\mathbb R^n$ to $\mathbb R^n$ is standard, then here we are exploring i guess the possibility that one or both of domain and codomain are weighted graphs?
+\end{itemize}
+
+\subsection{matern gps on graphs}
+
+\begin{itemize}
+    \item so to define a matern gp on a graph, we need to convert (6) and (7) to some kind of ``graph spde?''
+    \item ``Note that since a graph is a finite set, such a Gaussian process can be viewed as a multivariate Gaussian whose indices are the graph's nodes''
+    \item so no gps on infinite graphs?
+    \item (8): definition of graph laplacian; so for a finite graph it's just a certain matrix (\href{https://mbernste.github.io/posts/laplacian_matrix/}{link})
+    \item don't really get what's going on with the matrix $\Phi(\bm{\Delta})$. taylor expansions don't always exist, right? and what does it mean to plug a matrix into the taylor expansion of a function from $\mathbb R$ to $\mathbb R$?
+    \item the mathematical derivations seem to have some serious gaps, at least for my level
+    \item 
+\end{itemize}
+
+\section{links that might be relevant}
+
+\begin{itemize}
+    \item \href{https://math.stackexchange.com/questions/6258/matrices-commute-if-and-only-if-they-share-a-common-basis-of-eigenvectors}{commuting matrices}; just thought it seemed interesting; maybe not relevant for this project
+    \item \href{https://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix#Real_symmetric_matrices}{eigendecomp}; thinking whether the positive-definiteness of the matrix $\bm{\Delta}$ is relevant?
+    \item \href{https://en.wikipedia.org/wiki/Definite_matrix}{definite matrices}; same as above
+    \item \href{https://math.stackexchange.com/questions/82467/eigenvectors-of-real-symmetric-matrices-are-orthogonal}{orthogonal eigenvectors}; related to above
+    \item \href{https://en.wikipedia.org/wiki/Taylor_series#:~:text=The%20partial%20sum%20formed%20by,more%20accurate%20as%20n%20increases.}{taylor series}; what conditions do we need for $\Phi$ to have a taylor expansion?
+    \item \href{https://en.wikipedia.org/wiki/Matrix_exponential}{matrix exponential}; because the matrix exponential appears to be used
+\end{itemize}
+
+% summary section
+\include{sections/summary}
+
+% mini-proposals section
+\include{sections/mini-proposals}
+
+% project report section
+\include{sections/project-report}
+
+
+\printbibliography
+
+\end{document}

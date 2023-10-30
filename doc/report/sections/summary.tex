@@ -1,0 +1,204 @@
+% !TEX root = ../main.tex
+
+% Summary section
+
+\section{Publication-style review}
+
+\subsection{Summary}
+
+The paper \cite{pmlr-v130-borovitskiy21a} introduces a new type of kernel for a Gaussian process on a weighted graph. In particular, the popular Mat\'{e}rn kernel for Gaussian processes on Euclidean space is in some sense converted to a graph-theoretic kernel by replacing the Euclidean Laplace operator with the graph-theoretic Laplacian matrix. Mathematical details of the derivation are not provided in significant detail. As computational efficiency when working with large datasets is a general concern when using Gaussian processes, the authors also discuss computational aspects of the graph Mat\'{e}rn Gaussian process. Sparse graphs generally lead to faster computation, and various approximation techniques are also discussed, both for regression and classification. The authors also provide two comparisons of graph Mat\'{e}rn kernel with other kernels, and the performance is roughly comparable. It is not clear when one kernel might be preferable to another.
+
+\subsection{High-level comments on strengths and weaknesses}
+
+The main strength of the paper is the introduction of a new (Mat\'{e}rn) kernel for Gaussian processes on graphs. Furthermore, it is at least of theoretical interest that the new kernel is so closely related to the popular Mat\'{e}rn kernel for Gaussian processes on Euclidean space. The main weaknesses of the paper are twofold. First, the graph Mat\'{e}rn kernel does not appear to meaningfully outperform pre-existing alternatives, although this is not a significant weakness. Second, and perhaps slightly more signifcant, the the mathematical detail in \cite{pmlr-v130-borovitskiy21a} is relatively scarce and it is not obvious that the target audience will be able to reconstruct the mathematical derivations. In relation to other work, \cite{pmlr-v130-borovitskiy21a} is quite similar at least in inspiration to the authors' previous work \cite{NEURIPS2020_92bf5e62}, which applies a very similar trick in the replacement of the Euclidean Laplace operator with a related Laplace operator---the Laplace-Beltrami operator in the case of \cite{NEURIPS2020_92bf5e62}, and the graph Laplacian in the case of \cite{pmlr-v130-borovitskiy21a}.
+
+\subsection{Originality}
+
+It is not completely obvious precisely what is novel in the paper in question, because there doesn't appear to be any phrase along the lines of ``We present a novel\dots'' or ``We introduce\dots'' that would make clear exactly what novel work has been done by the authors. It \textit{appears} that, while Gaussian processes on Euclidean space are well known and Gaussian processes on graphs have been studied, the paper in question is the first to essentially port the Mat\'{e}rn kernel version of a Gaussian process from Eucliean space to the graph context. The work is a combination of prior techniques in the sense that both Gaussian processes on graphs, and Mat\'{e}rn kernels on Euclidean space, have both been studied (separately, apparently). If the work in question is the first to introduce Mat\'{e}rn Gaussian processes on graphs, then it obviously differentiates itself from prior work. Regarding the question of adequate citations, I think it depends to a significant extent on the novelty of the work. If the paper \textit{is} the first to introduce Mat\'{e}rn Gaussian processes on graphs, then by dint of its originality there will not be as as much prior work to cite. If it is not, then the appears to suffer from inadequate citations reflecting this fact, particularly in Sections 2.2 and 3.
+
+\subsection{Quality}
+
+It is important to keep one's audience in mind when presenting new work. The lead author is a pure mathematician by training and is presenting his work to an audience presumably consisting of statisticians, so there is presumably a large gap in mathematical knowledge beween the author and his audience. It seems very unlikely that many statisticians will have any particular familiarity with, for example, stochastic partial differential equations, heat semigroups, or Riemannian manifolds. Given this gap in mathematical knowledge it appears that the paper in question may be short in detail for some of its mathematical derivations, for example precisely how the standard Mat\'{e}rn kernel for $\mathbb R^n$ is converted to to a graph-theoretic version. If statisticians are happy to ignore technical details then the paper might be considered technically sound, especially if we presume that the lead author's mathematical training reduces the chance of his results being erroneous. On the other hand, if the audience is interested in understanding precisely how the graph-theoretic Mat\'{e}rn kernel was derived, then the paper appears short on mathematical justifications. Indeed, the word ``proof'' does not seem to appear in the paper. The authors appear to honestly present the strengths and weaknesses of their work insofar as they do not claim that Mat\'{e}rn Gaussian processes necessarily represent a major advance, especially since their own empirical results do not appear to show significantly improved performance compared to other kernels.
+
+\subsection{Clarity}
+
+The writing and presentation generally seem clear, modulo the aforementioned potential issues with a lack of mathematical clarity. The question of whether the paper ``adequately informs the reader'' of course depends on the reader's level of mathematical sophistication---see the above discussion on this point. Regarding code, the authors have provided code in a GitHub repository.
+
+\subsection{Significance}
+
+The results appear to be important insofar as they present a new kernel for Gaussian processes on graphs, and in particular it is interesting that a common kernel for Euclidean space has been ``ported'' over to graphs. The mathematical techniques used appear closely related (at least in spirit) to the techniques employed in the authors' previous paper \cite{NEURIPS2020_92bf5e62}
+
+It is unclear whether the mathematical techniques employed in the paper are ripe for further exploitation, at least in part because I don't fully understand then, nor are they thoroughly described. The authors' own experiments do not suggest that graph Mat\'{e}rn Gaussian processes blow away the competition, but with only two comparisons provided, it is too early to judge. At any rate, requiring that a new technique supercede all existing techniques is too high a bar. It is not clear that the authors provide ``unique data'' or ``unique conclusions about existing data'', and as described above, it is hard to evaluate their theoretical approach.
+
+\subsection{List of questions for the authors}
+
+\begin{enumerate}
+    \item Where and how can I learn more about the derivations and convergence results in this paper?
+    \item Do you have any expectations regarding when the Mat\'{e}rn graph Gaussian process might perform better or worse than alternative kernels, both in terms of accuracy and computational efficiency? (Might the answer to this question depend both on the characteristics of the graph, the dataset itself and the desired type of prediction?)
+    \item What if anything is impeding the application of Mat\'{e}rn kernels for Gaussian processes on directed and/or infinite graphs?
+\end{enumerate}
+
+\newpage
+\subsection{Technical/methodological summary}
+
+\subsubsection{Related literature and broader context}
+
+% brief discussion of gaussian processes here
+% then history of GPs on graphs
+% maybe then discussion of different kernels for GPs on graphs
+% (include citations)
+
+A stochastic process $X$ on parameter space $T$ is said to be \textit{Gaussian} if the random variable $\sum_{i = 1}^n c_i X_{t_i}$ is Gaussian, for any choice of $n \in \mathbb N$, $t_1, \dots, t_n \in T$, and $c_1, \dots, c_n \in \mathbb R$ \cite{kallenberg}. Gaussian processes have been studied theoretically for at least a century, since the archetypal stochastic process, Brownian motion, is itself Gaussian \cite{kallenberg}. However, it appears that only in the last few decades have Gaussian processes become a significant tool in statistics and machine learning \cite{rw}.
+
+By Lemma 14.1 of \cite{kallenberg}, the distribution of a Gaussian process $X$ is uniquely determined by the functions
+
+\begin{equation}\label{eq:gaus_1}
+    m_t = \mathrm E X_t, \quad r_{s, t} = \text{Cov}(X_s, X_t)
+\end{equation}
+
+for $s, t \in T$. However, among applied practitioners it appears that when using Gaussian processes, much more attention is paid to the covariance function than the mean function \cite{garnett_bayesoptbook_2023}. \textcolor{red}{(The precise details regarding the relationship between the regular covariance operation as in (\ref{eq:gaus_1}), and covariance functions more generally, will not be explored in this report.)}
+
+The standard definition of a stochastic process is a sequence of random variables $X = \left\{ X_t \colon t \in T \right\}$ over a parameter space $T$, which only requires the existence of some original probability space $\left( \Omega, \mathcal F, \mathbb P \right)$ and a (measurable) state space $(S, \mathcal S)$. This abstract definition permits the possibility that a stochastic process may be defined not only on Euclidean space, but also on other spaces, such as graphs \cite{grimmett}. Gaussian processes in particular are typically employed with Euclidean space as domain and codomain, but there is nothing in principle preventing Gaussian processes being defined on the vertices of a graph $G = (V, E)$, i.e. allowing $\Omega = V$. Indeed, this has been explored, as for example in \cite{kondor2002diffusion}. One of the key challenges in using Gaussian processes on graphs has been finding proper covariance functions, as explained in \cite{kondor2002diffusion}, since covariance functions (or ``kernels'') are required to be symmetric and positive semi-definite.
+
+In the work \cite{pmlr-v130-borovitskiy21a}, a new kernel for Gaussian processes on graphs is explored, in some sense deriving a graph-theoretic version of the popular Mat\'{e}rn kernel for Gaussian processes on Euclidean space. The Euclidean Mat\'{e}rn kernel is a function $C_{\nu} \colon \mathbb R^d \to \mathbb R$ given by
+
+\begin{equation}\label{eq:mat_1}
+    C_{\nu}(d) = \frac{2^{1 - \nu}}{\Gamma(\nu)} \left(\sqrt{2 \nu} \frac{d}{\ell}\right)^{\nu} K_{\nu}\left(\sqrt{2 \nu} \frac{d}{\ell},\right),
+\end{equation}
+
+where $d$ is the Euclidean distance between points $\bm x, \bm x' \in \mathbb R^n$; $\nu, \ell > 0$; $\Gamma$ refers to the gamma function and $K_{\nu}$ is the modified Bessel function of the second kind \cite{rw}. In \ref{sec:method}, we will explore the derivation of the Mat\'{e}rn kernel for Gaussian processes on graphs.
+
+\textcolor{red}{(The paper \cite{pmlr-v130-borovitskiy21a} also discusses a graph-theoretic version of the squared exponential kernel, which is related to the Mat\'{e}rn kernel. However, due to space limitations, this report will focus on the Mat\'{e}rn kernel.)}
+
+\subsubsection{Proposed methodology and theoretical properties}\label{sec:method}
+
+There does not appears to be a ``proposed methodology'' in \cite{pmlr-v130-borovitskiy21a}, insofar as the main contribution is a new kernel for Gaussian processes on graphs---presumably any existing method of using Gaussian processes on graphs can be used with the new kernel. Therefore, this section will focus on explaining whatever theoretical aspects of \cite{pmlr-v130-borovitskiy21a} that can reasonably be explained, given space limitations.
+
+The paper \cite{pmlr-v130-borovitskiy21a} refers to the paper \cite{whittle1963stochastic} in support of a claim that a Gaussian process $f$ on $\mathbb R^d$ with Mat\'{e}rn kernel as in (\ref{eq:mat_1}) satisfies the stochastic partial differential equation
+
+\begin{equation}\label{eq:spde_mat}
+    \left(\frac{2\nu}{\kappa^2} - \Delta\right)^{\frac{\nu}{2} + \frac{d}{4}}f = \mathcal W,
+\end{equation}
+
+where $\nu$ and $\kappa$ are parameters, $\Delta$ is the Laplace operator and $\mathcal W$ is Gaussian white noise. Unfortunately, the paper \cite{whittle1963stochastic} cannot be located in either the Simon Fraser University Library, or the University of British Columbia library, so this claim cannot investigated in further detail.
+
+In order to derive a graph-theoretic version of the Mat\'{e}rn kernel, the authors of \cite{pmlr-v130-borovitskiy21a} focus on the characterization of a Gaussian process as in (\ref{eq:spde_mat}). Although the derivation is not totally clear, a key step in the derivation appears to be replacing the Euclidean Laplace operator $\Delta$ with the Laplacian matrix $\bm \Delta$, which is a graph-theoretic analogue of the Euclidean Laplace operator $\Delta$. (Indeed, this appears to be a very similar at least in spirit to the maneuver used by the authors in their previous work \cite{NEURIPS2020_92bf5e62}, in which they replace the Euclidean Laplace operator in (\ref{eq:spde_mat}) with its Riemannian generalization, the Laplace-Beltrami operator. This substitution leads to the development of a Mat\'{e}rn Gaussian process on Riemannian manifolds in \cite{NEURIPS2020_92bf5e62}.)
+
+The derivation can be at least partly explained as follows. First assume that the function $\Phi \colon \mathbb R \to \mathbb R$ as defined in \cite{pmlr-v130-borovitskiy21a} is analytic, roughly meaning that it is equal to its Taylor series, so we can write
+
+\begin{equation}\label{eq:phi_1}
+    \Phi(z) = a_0 + a_1 z + a_2 z^2 + \dots \, .
+\end{equation}
+
+If we then consider a diagonal matrix
+
+\[
+    \mathbf D = 
+    \begin{pmatrix}
+        d_1 & 0 & 0 & \ldots & 0 \\
+        0 & d_2 & 0 & \ldots & 0 \\
+        0 & 0 & d_3 & \ldots & 0 \\
+        \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & \ldots & d_n
+    \end{pmatrix},
+\]
+
+and we plug this into $\Phi$, then we can write
+
+\begin{align*} % \label{eq:phi_1}
+    \Phi(\mathbf D) &= a_0 + a_1 \mathbf D + a_2 \mathbf D^2 + \dots\\
+    \\
+    &= a_0 \mathbf I + a_1 
+    \begin{pmatrix}
+        d_1 & 0 & 0 & \ldots & 0 \\
+        0 & d_2 & 0 & \ldots & 0 \\
+        0 & 0 & d_3 & \ldots & 0 \\
+        \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & \ldots & d_n
+    \end{pmatrix}
+    + a_2
+    \begin{pmatrix}
+        d_1^2 & 0 & 0 & \ldots & 0 \\
+        0 & d_2^2 & 0 & \ldots & 0 \\
+        0 & 0 & d_3^2 & \ldots & 0 \\
+        \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & \ldots & d_n^2
+    \end{pmatrix}
+    + \dots \\
+    \\
+    &= 
+    \begin{pmatrix}
+        \Phi(d_1) & 0 & 0 & \ldots & 0 \\
+        0 & \Phi(d_2) & 0 & \ldots & 0 \\
+        0 & 0 & \Phi(d_3) & \ldots & 0 \\
+        \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & \ldots & \Phi(d_n)
+    \end{pmatrix}.
+\end{align*}
+
+Now, if $\mathbf O$ is an orthogonal matrix, then note that
+
+\begin{align*}
+    (\mathbf{ODO}^\intercal)^n &= \underbrace{(\mathbf{ODO}^\intercal)\dots(\mathbf{ODO}^\intercal)}_{n \text{ times}}\\
+    &= \mathbf{O}\mathbf D^n \mathbf{O}^\intercal,
+\end{align*}
+
+so we conclude that
+
+\begin{align*}
+    \Phi(\mathbf \Delta) &= \Phi(\mathbf{U \Lambda U}^\intercal) \\
+    &= a_0 + a_1 \mathbf{U \Lambda U}^\intercal + a_2 (\mathbf{U \Lambda U}^\intercal)^2 + \dots\\
+    &= \mathbf U \Phi(\mathbf \Lambda) \mathbf{U}^\intercal,
+\end{align*}
+
+which is consistent with (9) in \cite{pmlr-v130-borovitskiy21a}.
+
+The remainder of the argument, namely proceeding from (10) to (11) in \cite{pmlr-v130-borovitskiy21a}, is not totally clear, since it's not obvious where the matrices $\mathbf U$ and $\mathbf U^\intercal$ have gone. However, it seems possible that their disappearance is related to the invariance of $\bm{\mathcal W} \sim \mathrm N(\mathbf 0, \mathbf I)$ under orthogonal transformations.
+
+\subsubsection{Computational complexity, crucial aspects and potential bottlenecks}
+
+Gaussian processes, in and of themselves, are simply stochastic processes as described earlier, so it may only make sense to discuss computational performance in the context of a specific manner of use of Gaussian processes. As such, since \cite{pmlr-v130-borovitskiy21a} is more focused on introducing a new flavor of Gaussian process, i.e. one with a Mat\'{e}rn kernel on a weighted graph, as opposed to prescribing a specific manner of use, we may begin with generalities and then discuss specific details described in \cite{pmlr-v130-borovitskiy21a}.
+
+Use of Gaussian processes often involves matrix inversion \cite{banerjee2013efficient, liu2020gaussian}, which is a key computational bottleneck in their use. Inversion of an $n \times n$ matrix is generally $O(n^3)$, although faster algorithms, such as Strassen's algorithm, exist \cite{clrs}. It is presumably difficult to draw an objective line beyond which datasets become too big for rote use of Gaussian processes, but computational limitations are clearly significant enough that references on Gaussian processes and their use devote attention to efficiency and approximation techniques \cite{rw,garnett_bayesoptbook_2023}.
+
+Regarding the specific discussion of computational issues in \cite{pmlr-v130-borovitskiy21a}, a few issues are mentioned, and they are presented below.
+
+First, when the graph $G$ is sparse (having relatively few edges), the graph Laplacian $\bm \Delta$ is a sparse matrix (having relatively few non-zero entries). This leads to sparse precision matrices, which are inverses of covariance matrices \cite{garnett_bayesoptbook_2023}, and special techniques have been developed to take advantage of matrix sparsity \cite{golubvanloan}.
+
+Second, the kernel matrix can be estimated via ``truncated eigenvalue expansion'', which appears to mean obtaining the $\ell$ largest eigenvalues of the Mat\'{e}rn kernel, and then proceeding with random features \cite{rahimi2007random}. The explanation of this process in \cite{pmlr-v130-borovitskiy21a} appears to assume familiarity with these techniques. According to \cite{pmlr-v130-borovitskiy21a}, the main drawback of this approach is so-called ``variance starvation'', which appears to mean that approximation of a Gaussian process can lead to badly underestimated variance as the number of observations increases; see for example Figure 1 in \cite{wang2018batched}.
+
+Another method concerns modification of the parameter $\nu$ in the equation (\ref{eq:spde_mat}), which according to \cite{pmlr-v130-borovitskiy21a}, which roughly speaking controls the smoothness of the sample paths of the Gaussian process. According to \cite{garnett_bayesoptbook_2023}, the parameter $\nu$ is typically given values $k + 1/2$ where $k \in \mathbb N$, and higher values lead to smoother sample paths. In contrast, in \cite{pmlr-v130-borovitskiy21a} it is suggested to set $\nu$ to a small whole number value. The succeeding explanation is very brief, but apparently this results in a Gaussian Markov random field, for which training with large amounts of data is relatively straightforward.
+
+For classification, use of Gaussian processes requires some modification because it's less reasonable to assume that likelihoods are Gaussian \cite{rw}. Again the explanation in \cite{pmlr-v130-borovitskiy21a} is quite sparse, but the idea appears to be to try to select a representative subset of the data, and calculate an approximation that is as close as possible to that using the entire dataset by minimizing the Kullback-Leibler divergence between two distributions. If the approximation is chosen to be Gaussian, then this amounts to choosing the closest Gaussian process posterior to the true non-Gaussian posterior. (It is not clear what sort of penalty might be paid for this distributional approximation.) According to \cite{pmlr-v130-borovitskiy21a}, there are scalable algorithms for this approach.
+
+% i guess i should discuss the sparsity mentioned in section 3
+% section 3.1 also looks pretty relevant for discussing computational properties
+% i guess i should also mention a standard issue (I think?) that
+% bayesian optimization use of GPs requires matrix inversion, so
+% when that is intractable, approximation techniques are used instead
+
+% so i guess the things to keep in mind are:
+% the size and sparsity of the graph laplacian,
+% and the matrix inversion required for bayesian optimization?
+% what else?
+
+\subsubsection{Alternative methods that could be applied}
+
+% i guess if you wanted to use GPs on graphs,
+% obviously you could just use a different kernel,
+% see table 1 for some other suggested kernels
+% but what if you wanted to use some other kind of ML method?
+% % what kind of ML methods are there for graphs, besides GPs?
+% maybe some ideas at this link:
+% https://huggingface.co/blog/intro-graphml
+
+In order to discuss ``alternative methods that could also be applied to the given problem'', we must attempt to define ``the problem''. Presumably the goal is to do some kind of machine learning on a graph. Below we discuss two cases---Gaussian processes on graphs, and other machine learning techniques on graphs.
+
+\paragraph{Gaussian processes on graphs} As \cite{pmlr-v130-borovitskiy21a} makes clear, Gaussian processes on graphs have been investigated since at least 2002 \cite{kondor2002diffusion}, so there are kernels available besides the graph Mat\'{e}rn kernel introduced in \cite{pmlr-v130-borovitskiy21a}. Based on the comparison provided in \cite{pmlr-v130-borovitskiy21a}, it appears that the graph Mat\'{e}rn kernel is roughly comparable to earlier kernels such as the diffusion kernel, the random walk kernel, and the inverse cosine kernel. However, the comparison in \cite{pmlr-v130-borovitskiy21a} is not exhaustive, so perhaps a clearer picture of the advantages and disadvantages of different kernels could emerge through further investigation.
+
+\paragraph{Other machine learning techniques on graphs} The main methods for machine learning on graphs appear to be graph neural networks, and graph transformers \cite{huggraph, stangraph}. A brief persual of Google does not appear to return any comparisons of graph neural networks or graph transformers with Gaussian processes on graphs.
+
+% \subsubsection{Mathematical points of confusion}
+
+% maybe just mention here that some of the derivations are quite lean and not a lot of detail is provided, especially for statisticians
+% and just mention that i don't have the matheamtical background to fill in the gaps left by the authors

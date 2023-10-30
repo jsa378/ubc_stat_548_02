@@ -1,0 +1,155 @@
+% !TEX root = ../main.tex
+
+% Mini-proposals section
+
+% \section{Mini-proposal}
+
+% each mini-proposal gets its own subsection
+% \subsection{Proposal 1: MY PROPOSAL TITLE} % enter your proposal title
+
+\section{Mini-Proposal}\label{sec:mini_prop}
+
+% i think he just wants a reasonably well-thought-out starting point
+% as opposed to trying to describe exactly how the project will go
+% and what i will deliver at the end
+% he expects to have to iterate and pivot
+
+The proposed project concerns an application of Gaussian processes on graphs to a partially observable Markov decision process (commonly abbreviated POMDP).
+
+\begin{figure}
+    \begin{center}
+        \begin{tikzpicture}
+            \begin{scope}[every node/.style={circle,thick,draw}]
+                % \node (A) at (0,0) {\textbf A};
+                % \node (B) at (0,3) {\textbf B};
+                % \node (C) at (2.5,4) {\textbf C};
+                % \node (D) at (2.5,1) {\textbf D};
+                % \node (E) at (2.5,-3) {\textbf E};
+                % \node (F) at (5,3) {\textbf F} ;
+
+                \node (B) at (0,0) {\textbf B};
+                \node (D) at (5,0) {\textbf D};
+                \node (E) at (0,3) {\textbf E};
+                \node (F) at (2.5,5) {\textbf F};
+                \node (C) at (2.5,1) {\textbf C};
+                \node (A) at (2.5,-3) {\textbf A};
+                \node (G) at (5,3) {\textbf G} ;
+            \end{scope}
+            
+            \begin{scope}[>={Stealth[black]},
+                          every node/.style={fill=white,circle},
+                          every edge/.style={draw=black,very thick}]
+                % \path [-] (A) edge node {$5$} (B);
+                % \path [-] (B) edge node {$3$} (C);
+                % \path [-] (A) edge node {$4$} (D);
+                % \path [-] (D) edge node {$3$} (C);
+                % \path [-] (A) edge node {$3$} (E);
+                % \path [-] (D) edge node {$3$} (E);
+                % \path [-] (D) edge node {$3$} (F);
+                % \path [-] (C) edge node {$5$} (F);
+                % \path [-] (E) edge node {$8$} (F); 
+                % \path [-] (B) edge[bend right=60] node {$1$} (E);
+
+                \path [-] (A) edge node {$\mathbf 5$} (B);
+                \path [-] (A) edge node {$\mathbf 2$} (D);
+                \path [-] (D) edge node {$\mathbf 4$} (C);
+                \path [-] (D) edge node {$\mathbf 1$} (G);
+                \path [-] (B) edge node {$\textcolor{red}{\mathbf 3}$} (C);
+                \path [-] (A) edge node {$\mathbf 6$} (D);
+                \path [-] (A) edge node {$\mathbf 4$} (C);
+                \path [-] (D) edge node {$\mathbf 3$} (C);
+                % \path [-] (A) edge node {$3$} (E);
+                % \path [-] (D) edge node {$3$} (E);
+                \path [-] (D) edge node {$\mathbf 3$} (F);
+                \path [-] (C) edge node {$\mathbf 5$} (F);
+                \path [-] (E) edge node {$\mathbf 8$} (F); 
+                % \path [-] (B) edge[bend right=60] node {$1$} (E); 
+                \path [-] (B) edge node {$\mathbf 1$} (E);
+                \path [-] (G) edge node {$\textcolor{red}{\mathbf 3}$} (F);
+                \path [-] (A) edge node {$\textcolor{red}{\mathbf 7}$} (G);
+                \path [-] (C) edge node {$\textcolor{red}{\mathbf 2}$} (E);
+            \end{scope}
+            \end{tikzpicture}
+    \end{center}
+    \caption{A weighted graph $G$, representing a simple example of a reinforcement learning state space $\mathcal S$ for the mini-project proposal in Section \ref{sec:mini_prop}. The informal idea is that a true, complete state $s \in \mathcal S$ will consist of all weight values and locations in the graph. In contrast, the observation $o \in \mathcal O$, $o \subseteq s$ contains only the weights in black. For example, the observation $o$ will contain the weight $\mathbf 6$ between nodes $\textbf A$ and $\textbf D$, but not the weight $\textcolor{red}{\mathbf 3}$ between nodes $\textbf B$ and $\textbf C$.  If the weights represent a cost to travel between two nodes, then the agent's task is to find the least costly path to travel from node $\textbf A$ to node $\textbf F$. At each time step, all weights will be drawn from certain probability distributions, and the agent will use a Gaussian process on $G$ to estimate the unknown costs and then select a path from $\textbf A$ to $\textbf F$. Code for graph adapted from \href{https://tex.stackexchange.com/questions/270543/draw-a-graph-in-latex-with-tikz}{\TeX\,StackExchange}.}
+    \label{fig:prop_graph}
+\end{figure}
+
+% As youc an see in Figure \ref{fig:prop_graph}, 
+
+\subsection{Area of Opportunity}
+
+A brief Google search for ``reinforcement learning graph gaussian process'' did not return any results that looked comparable.
+
+\subsection{Proposed method/approach}
+
+The informal idea is that the reinforcement learning agent is managing logistics or route-planning for a concern that must move goods from an origin to a destination on a structure that can be represented by a weighted graph $G = (V, E)$. A weight $w$ between vertices $v$ and $v'$ in $V$ represents the cost of traveling from $v$ to $v'$, and the agent's task is to find the route from origin to destination that minimizes the cost accumulated along the way.
+
+However, at every time step, the costs of traveling between nodes are subject to randomness, and not all costs are observable to the agent. For simplicity, we assume that the agent requires one time step to travel along an edge between nodes. This setup will require the agent to re-calculate its estimates of the costs of routes for the remaining portion of the journey at every time step. This seems to be a reasonable assumption, since it is easy to imagine a delivery van driver having to change alter his planned route because of an (unforeseen, obviously) traffic accident that causes a traffic jam along his planned route.
+
+Even though the Markov decision process is assumed to be only partially observable, suppose the agent has access to a good estimator of its true state. This estimator could take the form of a function $\text{GP} \colon \mathcal O \to \mathcal S$ that, given an observation $o$, produces the estimate $\text{GP}(o) = \hat s$ of $s$. Given the estimate $\hat s$ of $s$, the agent may be able to proceed as though its environment is in fact fully observable, and therefore use standard reinforcement learning algorithms that assume full observability. Furthermore, it may be possible train the estimator $\text{GP}$ in an online fashion as the agent interacts with its environment, since when the agent acts on information from $\text{GP}$, it may receive one of the true costs it was attempting to estiamte.
+
+As a comparison, the method of estimating the agent's true state and proceeding as though the state is known might be compared with standard techniques for partially observable Markov decision processes.
+
+See Figure \ref{fig:prop_graph} for an simple example.
+
+\paragraph{Partially observable Markov decision processes} This presentation of partially observable Markov decision processes follows \cite[Ch. 12]{rl_sota}.
+
+\subsection{Expected technical challenges and bottlenecks}
+
+\subsubsection{Constructing an appropriate example}
+
+One important aspect of this mini-project is finding an appropriate example for testing. An example that is too elaborate may hinder progress, while an example that is too simple may be insufficiently interesting for analysis. Some aspects of example selection requiring judgment are discussed below.
+
+\paragraph{Graph design} It is easy to imagine, in general, that a large business may own multiple warehouses across the country, so that in a very large graph, deliveries can in principle be made from any origin (warehouse) node to any other node in the graph. This seems excessively complicated for this mini-project, so instead it seems more reasonable to consider only a simplified graph with one origin node and one destination node, as in Figure \ref{fig:prop_graph}.
+
+(One simplifying assumption is that an edge between vertices $v$ and $v'$ can be traversed both ways, and furthermore, the costs to travel each way are not separate. This clearly an approximation to reality, since highways can be congested in one direction but not in the other direction. Fixing this assumption would require replacing every edge in a graph as in Figure \ref{fig:prop_graph} with two opposite directed edges, with their own cost distributions. However, this is probably an unnecessary complication for this mini-project, especially since the graph Mat\'{e}rn Gaussian process as in \cite{pmlr-v130-borovitskiy21a} is only specified for undirected graphs.)
+
+\paragraph{Computational cost} Related to the above, hopefully an example can be developed that can be simulated on available hardware in a reasonable amount of time. Whether this occurs will only become clear later.
+
+\paragraph{Cost probability distributions} The state space $\mathcal S$, and hence the observation space $\mathcal O$, will naturally have to contain not only the agent's current location in the graph, but also information about the costs on edges between nodes.\footnote{In designs with more elaborate graphs, presumably the state space and observation space will also have to include information concerning the delivery origin and destination.} It is common, though not strictly necessary, in reinforcement learning to assume that the state space $\mathcal S$ and action space $\mathcal A$ are both finite, for mathematical tractability. To this end, it is necessary to use discrete probability distributions for the costs on each node of the graph.
+
+Furthermore, it is clear that the costs on edges touching the same node cannot reasonably be considered independent. If traffic is heavy between nodes $v$ and $v'$, then that traffic presumably continues to flow elsewhere in the graph, unless one of the nodes is a destination. At this point it is not entirely clear how to enforce this structure. Perhaps costs should be drawn from some sort of discrete approximation to a multivariate normal distribution, where covariances between edges decrease as the distance between those edges increases.
+
+\subsubsection{Defining the partially observable Markov decision process}
+
+Another important aspect of this mini-project is attempting to clearly define the partially observable Markov decision process. To that end, we consider each component in turn below.
+
+\paragraph{State space} If the graph contains $n$ edges, then any state $s \in \mathcal S$ should presumably be a vector of length $n + 1$, containing all current costs and also the agent's current position in the graph. If the cost distribution for the $i$\textsuperscript{th} edge has $k_i \in \mathbb N$ possible values, then the we have the upper bound
+
+\[
+    \lvert \mathcal S \rvert \leq \lvert V \rvert \cdot \prod_{i = 1}^n k_i
+\]
+
+on the size of the state space.
+
+\paragraph{Action space} It seems clear that, given any state $s \in \mathcal S$ (and observation $o \in \mathcal O$), the actions available to the agent should be movements to nodes connected to the current node. This necessitates a state-dependent action space of the form $\mathcal A(s)$, which is somewhat more complicated than is standard. It is clear that
+
+\[
+    \lvert \mathcal A(s) \rvert = \deg v,
+\]
+
+where $v$ is the state component of the vector $s$.
+
+\paragraph{Observation space} 
+
+\paragraph{Transition function} 
+
+\paragraph{Observation function} 
+
+\paragraph{Cost function} The cost function (ordinarily the reward function) should be a function $c \colon \mathcal S \times \mathcal A \to \mathbb N$, giving the cost accrued when taking action $a$ in state $s$, i.e. the cost on the edge travelled. The cost should be at least partly known to the agent, since some of the costs on the graph edges are known.
+
+\subsection{Predicted potential impact}
+
+
+
+% \subsubsection{Possible extensions}
+
+% Possible extensions to the model described above, not necessarily appropriate for the mini-project, are briefly described below.
+
+
+
+% each mini-proposal gets its own subsection
+% \subsection{Proposal 2: MY OTHER PROPOSAL TITLE} % enter your proposal title
+
+% ...
