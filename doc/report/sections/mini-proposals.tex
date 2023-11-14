@@ -14,7 +14,7 @@
 % and what i will deliver at the end
 % he expects to have to iterate and pivot
 
-The proposed project concerns an application of Gaussian processes on graphs to a partially observable Markov decision process (commonly abbreviated POMDP).
+The proposed project concerns an application of Gaussian processes on graphs to a Markov decision process.% partially observable Markov decision process (commonly abbreviated POMDP).
 
 \begin{figure}
     \begin{center}
@@ -33,7 +33,7 @@ The proposed project concerns an application of Gaussian processes on graphs to 
                 \node (F) at (2.5,5) {\textbf F};
                 \node (C) at (2.5,1) {\textbf C};
                 \node (A) at (2.5,-3) {\textbf A};
-                \node (G) at (5,3) {\textbf G} ;
+                \node (G) at (5,3) {\textbf G};
             \end{scope}
             
             \begin{scope}[>={Stealth[black]},
@@ -54,7 +54,7 @@ The proposed project concerns an application of Gaussian processes on graphs to 
                 \path [-] (A) edge node {$\mathbf 2$} (D);
                 \path [-] (D) edge node {$\mathbf 4$} (C);
                 \path [-] (D) edge node {$\mathbf 1$} (G);
-                \path [-] (B) edge node {$\textcolor{red}{\mathbf 3}$} (C);
+                \path [-] (B) edge node {$\mathbf 3$} (C);
                 \path [-] (A) edge node {$\mathbf 6$} (D);
                 \path [-] (A) edge node {$\mathbf 4$} (C);
                 \path [-] (D) edge node {$\mathbf 3$} (C);
@@ -65,13 +65,14 @@ The proposed project concerns an application of Gaussian processes on graphs to 
                 \path [-] (E) edge node {$\mathbf 8$} (F); 
                 % \path [-] (B) edge[bend right=60] node {$1$} (E); 
                 \path [-] (B) edge node {$\mathbf 1$} (E);
-                \path [-] (G) edge node {$\textcolor{red}{\mathbf 3}$} (F);
-                \path [-] (A) edge node {$\textcolor{red}{\mathbf 7}$} (G);
-                \path [-] (C) edge node {$\textcolor{red}{\mathbf 2}$} (E);
+                \path [-] (G) edge node {$\mathbf 3$} (F);
+                \path [-] (A) edge node {$\mathbf 7$} (G);
+                \path [-] (C) edge node {$\mathbf 2$} (E);
             \end{scope}
             \end{tikzpicture}
     \end{center}
-    \caption{A weighted graph $G$, representing a simple example of a reinforcement learning state space $\mathcal S$ for the mini-project proposal in Section \ref{sec:mini_prop}. The informal idea is that a true, complete state $s \in \mathcal S$ will consist of all weight values and locations in the graph. In contrast, the observation $o \in \mathcal O$, $o \subseteq s$ contains only the weights in black. For example, the observation $o$ will contain the weight $\mathbf 6$ between nodes $\textbf A$ and $\textbf D$, but not the weight $\textcolor{red}{\mathbf 3}$ between nodes $\textbf B$ and $\textbf C$.  If the weights represent a cost to travel between two nodes, then the agent's task is to find the least costly path to travel from node $\textbf A$ to node $\textbf F$. At each time step, all weights will be drawn from certain probability distributions, and the agent will use a Gaussian process on $G$ to estimate the unknown costs and then select a path from $\textbf A$ to $\textbf F$. Code for graph adapted from \href{https://tex.stackexchange.com/questions/270543/draw-a-graph-in-latex-with-tikz}{\TeX\,StackExchange}.}
+    \caption{A weighted graph $G$, representing a simple example of a reinforcement learning state space $\mathcal S$ for the mini-project proposal in Section \ref{sec:mini_prop}. Unlike a standard weighted graph, which only has weights on edges, we will consider a graph that also has a real number associated with each vertex. The informal idea is that a true, complete state $s \in \mathcal S$ will consist of all weight and vertex values and locations in the graph. In contrast, the observation $o \in \mathcal O$, $o \subseteq s$ will not contain the vertex weights. The exact details of the proposal are not totally clear, but the idea is that weights on the graph edges will represent costs incurred, and the vertex weights will represent rewards.} % If the weights represent a cost to travel between two nodes, then the agent's task is to find the least costly path to travel from node $\textbf A$ to node $\textbf F$. At each time step, all weights will be drawn from certain probability distributions, and the agent will use a Gaussian process on $G$ to estimate the unknown costs and then select a path from $\textbf A$ to $\textbf F$. Code for graph adapted from \href{https://tex.stackexchange.com/questions/270543/draw-a-graph-in-latex-with-tikz}{\TeX\,StackExchange}.}
+    % \caption{A weighted graph $G$, representing a simple example of a reinforcement learning state space $\mathcal S$ for the mini-project proposal in Section \ref{sec:mini_prop}. The informal idea is that a true, complete state $s \in \mathcal S$ will consist of all weight values and locations in the graph. In contrast, the observation $o \in \mathcal O$, $o \subseteq s$ contains only the weights in black. For example, the observation $o$ will contain the weight $\mathbf 6$ between nodes $\textbf A$ and $\textbf D$, but not the weight $\textcolor{red}{\mathbf 3}$ between nodes $\textbf B$ and $\textbf C$.  If the weights represent a cost to travel between two nodes, then the agent's task is to find the least costly path to travel from node $\textbf A$ to node $\textbf F$. At each time step, all weights will be drawn from certain probability distributions, and the agent will use a Gaussian process on $G$ to estimate the unknown costs and then select a path from $\textbf A$ to $\textbf F$. Code for graph adapted from \href{https://tex.stackexchange.com/questions/270543/draw-a-graph-in-latex-with-tikz}{\TeX\,StackExchange}.}
     \label{fig:prop_graph}
 \end{figure}
 
@@ -99,7 +100,7 @@ See Figure \ref{fig:prop_graph} for an simple example.
 
 \paragraph{Data structures} Although the textbook \cite[Ch. 20]{clrs} suggests storing a weighted graph as an adjacency list, it seems more straightfoward to use matrices. The asymptotic efficiency of various representations do not seem relevant at this stage.
 
-\subsubsection{Brief overview of partially observable Markov decision processes} This presentation of partially observable Markov decision processes follows \cite[Ch. 12]{rl_sota}.
+% \subsubsection{Brief overview of partially observable Markov decision processes} This presentation of partially observable Markov decision processes follows \cite[Ch. 12]{rl_sota}.
 
 \subsection{Expected technical challenges and bottlenecks}
 
@@ -117,7 +118,7 @@ One important aspect of this mini-project is finding an appropriate example for 
 
 Furthermore, it is clear that the costs on edges touching the same node cannot reasonably be considered independent. If traffic is heavy between nodes $v$ and $v'$, then that traffic presumably continues to flow elsewhere in the graph, unless one of the nodes is a destination. At this point it is not entirely clear how to enforce this structure. Perhaps costs should be drawn from some sort of discrete approximation to a multivariate normal distribution, where covariances between edges decrease as the distance between those edges increases.
 
-\subsubsection{Defining the partially observable Markov decision process}
+\subsubsection{Defining the Markov decision process}
 
 Another important aspect of this mini-project is attempting to clearly define the partially observable Markov decision process. To that end, we consider each component in turn below.
 
@@ -137,13 +138,13 @@ on the size of the state space.
 
 where $v \in V$ is the state component of the vector $s$.
 
-\paragraph{Observation space} 
+% \paragraph{Observation space} 
 
-\paragraph{Transition function} 
+\paragraph{Transition function} Transitions should presumably be deterministic, since 
 
 \paragraph{Observation function} 
 
-\paragraph{Cost function} The cost function (ordinarily the reward function) should be a function $c \colon \mathcal S \times \mathcal A \to \mathbb N$, giving the cost accrued when taking action $a$ in state $s$, i.e. the cost on the edge travelled. The cost should be at least partly known to the agent, since some of the costs on the graph edges are known.
+\paragraph{Cost function} The cost function (ordinarily the reward function) should be a function $c \colon \mathcal S \times \mathcal A \to \mathbb N$, giving the cost accrued when taking action $a$ in state $s$, i.e. the cost on the edge travelled. % The cost should be at least partly known to the agent, since some of the costs on the graph edges are known.
 
 \subsection{Predicted potential impact}
 

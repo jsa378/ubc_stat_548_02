@@ -1,0 +1,34 @@
+# change to desired directory
+cd "C:\Users\jesse\Downloads\STAT 548\02\venv"
+
+# create python virtual environment
+python -m venv "C:\Users\jesse\Downloads\STAT 548\02\venv"
+
+# move up one directory
+cd ..
+
+# clone the matern graph gp github repository
+git clone https://github.com/spbu-math-cs/Graph-Gaussian-Processes
+
+# start the python virtual environment
+venv\Scripts\activate.bat
+
+# upgrade pip
+python.exe -m pip install --upgrade pip
+
+# install the matern graph gp library
+cd Graph-Gaussian-Processes
+pip install -e .
+
+# move up one directory
+cd ..
+
+# install more software
+pip install networkx[default] matplotlib
+
+# Note:
+# the file mini_project.py needs to be placed in
+# C:\Users\jesse\Downloads\STAT 548\02\Graph-Gaussian-Processes
+# in order for the import statement
+# from graph_matern.kernels.graph_matern_kernel import GraphMaternKernel
+# to work

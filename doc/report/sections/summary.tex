@@ -105,9 +105,9 @@ If we then consider a diagonal matrix
 
 and we plug this into $\Phi$, then we can write
 
-\begin{align*} % \label{eq:phi_1}
-    \Phi(\mathbf D) &= a_0 + a_1 \mathbf D + a_2 \mathbf D^2 + \dots\\
-    \\
+\begin{align} % \label{eq:phi_1}
+    \Phi(\mathbf D) &= a_0 + a_1 \mathbf D + a_2 \mathbf D^2 + \dots \notag \\
+    \notag \\
     &= a_0 \mathbf I + a_1 
     \begin{pmatrix}
         d_1 & 0 & 0 & \ldots & 0 \\
@@ -124,8 +124,8 @@ and we plug this into $\Phi$, then we can write
         \vdots & \vdots & \vdots & \ddots & \vdots \\
         0 & 0 & 0 & \ldots & d_n^2
     \end{pmatrix}
-    + \dots \\
-    \\
+    + \dots \notag \\
+    \notag \\
     &= 
     \begin{pmatrix}
         \Phi(d_1) & 0 & 0 & \ldots & 0 \\
@@ -133,8 +133,8 @@ and we plug this into $\Phi$, then we can write
         0 & 0 & \Phi(d_3) & \ldots & 0 \\
         \vdots & \vdots & \vdots & \ddots & \vdots \\
         0 & 0 & 0 & \ldots & \Phi(d_n)
-    \end{pmatrix}.
-\end{align*}
+    \end{pmatrix} \label{eq:diag}.
+\end{align}
 
 Now, if $\mathbf O$ is an orthogonal matrix, then note that
 
@@ -155,6 +155,20 @@ which is consistent with (9) in \cite{pmlr-v130-borovitskiy21a}.
 
 The remainder of the argument, namely proceeding from (10) to (11) in \cite{pmlr-v130-borovitskiy21a}, is not totally clear, since it's not obvious where the matrices $\mathbf U$ and $\mathbf U^\intercal$ have gone. However, it seems possible that their disappearance is related to the invariance of $\bm{\mathcal W} \sim \mathrm N(\mathbf 0, \mathbf I)$ under orthogonal transformations.
 
+Based on (12) in \cite{pmlr-v130-borovitskiy21a}, it appears that the final form of the graph Mat\'{e}rn kernel is
+
+\begin{equation}\label{eq:mat_ker_1}
+    \left(\frac{2\nu}{\kappa^2} + \bm \Delta \right)^{-\nu}.
+\end{equation}
+
+I believe this ought to be interpreted as follows. First note that (10) in \cite{pmlr-v130-borovitskiy21a}, we considered the function $\Phi \colon \mathbb R \to \mathbb R$ given by
+
+\begin{equation}\label{eq:Phi_1}
+    \Phi(\lambda) = \left(\frac{2\nu}{\kappa^2} + \lambda\right)^{\frac{\nu}{2}}.
+\end{equation}
+
+Note that (\ref{eq:mat_ker_1}) can be read as $\Phi(\bm \Delta)$, and in (9) in \cite{pmlr-v130-borovitskiy21a}, we were instructed to interpret $\Phi(\bm \Delta)$ as $\mathbf U \Phi(\bm \Lambda) \mathbf U^\intercal$, where $\bm \Delta = \mathbf U \bm \Lambda \mathbf U^{\intercal}$. Therefore, (\ref{eq:mat_ker_1}) seems to represent at least in part the addition of $2\nu / \kappa^2$ to each eigenvalue of $\bm \Delta$. (It is unclear how the exponent changed from $\nu / 2$ to $- \nu$ between (\ref{eq:Phi_1}) and (\ref{eq:mat_ker_1}).)
+
 \subsubsection{Computational complexity, crucial aspects and potential bottlenecks}
 
 Gaussian processes, in and of themselves, are simply stochastic processes as described earlier, so it may only make sense to discuss computational performance in the context of a specific manner of use of Gaussian processes. As such, since \cite{pmlr-v130-borovitskiy21a} is more focused on introducing a new flavor of Gaussian process, i.e. one with a Mat\'{e}rn kernel on a weighted graph, as opposed to prescribing a specific manner of use, we may begin with generalities and then discuss specific details described in \cite{pmlr-v130-borovitskiy21a}.
@@ -163,13 +177,19 @@ Use of Gaussian processes often involves matrix inversion \cite{banerjee2013effi
 
 Regarding the specific discussion of computational issues in \cite{pmlr-v130-borovitskiy21a}, a few issues are mentioned, and they are presented below.
 
-First, when the graph $G$ is sparse (having relatively few edges), the graph Laplacian $\bm \Delta$ is a sparse matrix (having relatively few non-zero entries). This leads to sparse precision matrices, which are inverses of covariance matrices \cite{garnett_bayesoptbook_2023}, and special techniques have been developed to take advantage of matrix sparsity \cite{golubvanloan}.
+First, when the graph $G$ is sparse (having relatively few edges), the graph Laplacian $\bm \Delta$ is a sparse matrix (having relatively few non-zero entries). This leads to sparse precision matrices, which are inverses of covariance matrices \cite{garnett_bayesoptbook_2023}, and special techniques have been developed to take advantage of matrix sparsity \cite{golubvanloan}. 
 
-Second, the kernel matrix can be estimated via ``truncated eigenvalue expansion'', which appears to mean obtaining the $\ell$ largest eigenvalues of the Mat\'{e}rn kernel, and then proceeding with random features \cite{rahimi2007random}. The explanation of this process in \cite{pmlr-v130-borovitskiy21a} appears to assume familiarity with these techniques. According to \cite{pmlr-v130-borovitskiy21a}, the main drawback of this approach is so-called ``variance starvation'', which appears to mean that approximation of a Gaussian process can lead to badly underestimated variance as the number of observations increases; see for example Figure 1 in \cite{wang2018batched}.
+Second, the kernel matrix can be estimated via ``truncated eigenvalue expansion''. The explanation of this process in \cite{pmlr-v130-borovitskiy21a} appears to assume familiarity with these techniques, but the essential idea appears to be as follows. First, we obtain the $\ell$ smallest eigenvalues and eigenvectors of the matrix $\bm \Delta$ using a method such as the Lanczos algorithm. (Apparently, the small eigenvalues of the graph Laplacian give important information about the ``connectivity'' of a graph \cite{cook}; it is unclear whether this is relevant for the methods discussed in \cite{pmlr-v130-borovitskiy21a}.) If we interpret the graph Mat\'{e}rn kernel in (\ref{eq:mat_ker_1}) in the $\Phi(\bm \Lambda)$ sense, then the matrix (\ref{eq:diag}) makes relatively clear that we will have obtained the $\ell$ \textit{largest} eigenvalues of the Mat\'{e}rn kernel, since $\Phi$ as in (\ref{eq:mat_ker_1}) is a decreasing function. %) which appears to mean obtaining the $\ell$ largest eigenvalues of the Mat\'{e}rn kernel, and then proceeding with random features \cite{rahimi2007random}.  
+
+According to \cite{pmlr-v130-borovitskiy21a}, the main drawback of the truncated eigenvalue expansion approach is so-called ``variance starvation'', which appears to mean that approximation of a Gaussian process can lead to badly underestimated variance as the number of observations increases; see for example Figure 1 in \cite{wang2018batched}.
 
 Another method concerns modification of the parameter $\nu$ in the equation (\ref{eq:spde_mat}), which according to \cite{pmlr-v130-borovitskiy21a}, which roughly speaking controls the smoothness of the sample paths of the Gaussian process. According to \cite{garnett_bayesoptbook_2023}, the parameter $\nu$ is typically given values $k + 1/2$ where $k \in \mathbb N$, and higher values lead to smoother sample paths. In contrast, in \cite{pmlr-v130-borovitskiy21a} it is suggested to set $\nu$ to a small whole number value. The succeeding explanation is very brief, but apparently this results in a Gaussian Markov random field, for which training with large amounts of data is relatively straightforward.
 
 For classification, use of Gaussian processes requires some modification because it's less reasonable to assume that likelihoods are Gaussian \cite{rw}. Again the explanation in \cite{pmlr-v130-borovitskiy21a} is quite sparse, but the idea appears to be to try to select a representative subset of the data, and calculate an approximation that is as close as possible to that using the entire dataset by minimizing the Kullback-Leibler divergence between two distributions. If the approximation is chosen to be Gaussian, then this amounts to choosing the closest Gaussian process posterior to the true non-Gaussian posterior. (It is not clear what sort of penalty might be paid for this distributional approximation.) According to \cite{pmlr-v130-borovitskiy21a}, there are scalable algorithms for this approach.
+
+\subsection{Implementation}
+
+The authors of \cite{pmlr-v130-borovitskiy21a} provide an implementation of their methods on GitHub (\href{https://github.com/spbu-math-cs/Graph-Gaussian-Processes}{link}). The code appers to be intended to integrate with GPflow, a package for building Gaussian process models in Python, using TensorFlow.
 
 % i guess i should discuss the sparsity mentioned in section 3
 % section 3.1 also looks pretty relevant for discussing computational properties
