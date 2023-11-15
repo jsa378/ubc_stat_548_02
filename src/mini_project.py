@@ -137,3 +137,7 @@ eigenvalues, eigenvectors = tf.linalg.eigh(laplacian)  # only should be done onc
 # and 
 # https://gpflow.github.io/GPflow/develop/notebooks/getting_started/basic_usage.html
 # for guidance
+
+# but i can't use the laplacian for the entire graph L(G), can I?
+# don't I have to restrict it somehow to only the data points
+# in the training set?
