@@ -1,3 +1,10 @@
+# Note:
+# the file mini_project.py needs to be placed in
+# C:\Users\jesse\Downloads\STAT 548\02\Graph-Gaussian-Processes
+# in order for the import statement
+# from graph_matern.kernels.graph_matern_kernel import GraphMaternKernel
+# to work
+
 # change to desired directory
 cd "C:\Users\jesse\Downloads\STAT 548\02\venv"
 
@@ -26,9 +33,32 @@ cd ..
 # install more software
 pip install networkx[default] matplotlib
 
-# Note:
-# the file mini_project.py needs to be placed in
-# C:\Users\jesse\Downloads\STAT 548\02\Graph-Gaussian-Processes
-# in order for the import statement
-# from graph_matern.kernels.graph_matern_kernel import GraphMaternKernel
-# to work
+# change directory and clone the doctor who dataset
+cd "Downloads\STAT 548\02"
+git clone https://github.com/manuel-dileo/doctor-who-dataset
+
+
+
+
+###
+
+CONDA VERSION
+
+# download and install miniconda (this is on Windows)
+curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe -o miniconda.exe
+start /wait "" miniconda.exe /S
+del miniconda.exe
+
+# open Anaconda Prompt (miniconda3) via Start Menu
+
+# install osmnx
+conda create -n ox -c conda-forge --strict-channel-priority osmnx
+
+# activate environment
+conda activate ox
+
+# 
+cd "Downloads\STAT 548\02\Graph-Gaussian-Processes"
+pip install -e . # throws error
+
+conda install tensorflow gpflow tensorflow-probability matplotlib tqdm spharapy stripy contextily warn tables
