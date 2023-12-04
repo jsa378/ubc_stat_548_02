@@ -10,31 +10,31 @@
 
 The proposed project concerned an application of Gaussian processes on graphs to Markov decision processes, the latter being the standard framework for reinforcement learning. The general idea was that a reinforcement learning agent would be tasked with estimating shortest paths on a weighted graph, with only partially known and perhaps evolving weights.
 
-However, it was never precisely clear how to set up the what type of Markov decision process to choose for this problem and how to set it up. For example, since the graph weights were only partially known, it might make sense to use a partially observable Markov decision process, but it was not clear how to precisely define the partially observable Markov decision process. In an email dated November 2\textsuperscript{nd}, Professor Pleiss suggested a somewhat different setup in which the costs on the graph edges are known, but the rewards on the graph vertices are unknown. This suggestion was presumably made to conform with the fact that the graph Mat\'{e}rn Gaussian process described in \cite{pmlr-v130-borovitskiy21a} is define on the graph vertices, not its edges, but this setup is no longer obviously a partially observable Markov decision process.
+However, it was never precisely clear what type of Markov decision process to choose for this problem and how to define its components. For example, since the graph weights were only partially known, it might make sense to use a partially observable Markov decision process, but it was not clear how to precisely define the partially observable Markov decision process. In an email dated November 2\textsuperscript{nd}, Professor Pleiss suggested a somewhat different setup in which the costs on the graph edges are known, but the rewards on the graph vertices are unknown. This suggestion was presumably made to conform with the fact that the graph Mat\'{e}rn Gaussian process described in \cite{pmlr-v130-borovitskiy21a} is define on the graph vertices, not its edges, but this setup is no longer obviously a partially observable Markov decision process.
 
 \subsubsection{A New Project Direction: Estimating Shortest Paths}
 
 We decided to abandon the proposed connection to reinforcement learning and re-frame the project in terms of graph theory and Gaussian processes. More precisely, we consider the following problem. Suppose we have a weighted graph $G = (V, E)$ with weight function $w \colon E \to \mathbb R$, and only a subset of the weights are known. Mathematically, we can suppose there is some strict subset $E' \subset E$, and only the restriction $w \restriction E' \colon E' \to \mathbb R$ is known. We would like to estimate the entire weight function $w \colon E \to \mathbb R$, via a Gaussian process. This estimate of $w$ might be written $\hat w$. We would like that $\hat w \restriction E' = w \restriction E'$, and that the values of $\hat w$ over the unobserved weights on edges $E \setminus E'$ are estimated via a Gaussian process.
 
-In particular, we would like to develop estimates of the unobserved weights in order to compute \textit{estimated shortest paths} on the graph $G$. Given estimates of the unobserved weights, estimated shortest paths are calculated by the application of a shortest path algorithm, for example Dijkstra's algorithm, on what we might call the graph $\hat G$, an edge-weighted graph with weight function $\hat w$.
+In particular, we would like to develop estimates of the unobserved weights in order to compute \textit{estimated shortest paths} on the graph $G$. Given estimates of the unobserved weights, estimated shortest paths are calculated by the application of a shortest path algorithm, for example Dijkstra's algorithm, on what we might call the graph $\hat G$, an edge-weighted graph with weight function $\hat w$. Informally, the graph $\hat G$ is $G$, but with the edge weights that we had not observed filled in with our estimates of those weights.
 
 Given this new project direction, we must consider the following issues:
 
 \begin{enumerate}
-    \item how to formulate the estimation of $w$ mathematically,
-    \item how to implement the estimation of $w$ computationally,
-    \item how to evaluate the performance of a method for estimating $w$.
+    \item how to formulate the shortest path estimation mathematically,
+    \item how to implement the shortest path estimation computationally,
+    \item how to evaluate the performance of a method for estimating shortest paths.
 \end{enumerate}
 
 \subsection{Mathematical Formulation}
 
 An initial stumbling block is that we wish to learn $w \colon E \to \mathbb R$, but the graph Mat\'{e}rn Gaussian process as defined in \cite{pmlr-v130-borovitskiy21a} is defined on the \textit{vertices} of a graph, not its edges. (It would be helpful to understand why we cannot define a Gaussian process on the edges of a weighted graph, since this is would be the na\"{i}ve choice.)
 
-Given this limitation, we would like to adapt a weighted graph so that its edges become vertices, in some sense. There at at least two ways to do this, which will be described below.
+Given this limitation, we would like to adapt a edge-weighted graph so that its edges become vertices, in some sense. There at at least two ways to do this, which will be described below.
 
 \subsubsection{First Method: Add Extra Vertices to \texorpdfstring{$G$}{G}}
 
-Given a weighted graph $G_1 = (V, E)$, one possible approach to adapt $G_1$ appears to be to add vertices to $G1$ on the existing edges, thereby splitting each edge into two edges. A simple example is shown in Figures \ref{fig:add_nodes_1} and \ref{fig:add_nodes_2}. Beginning in Figure \ref{fig:add_nodes_1} with a graph $G_1$, this graph is then transformed into a graph $G_2$ in Figure \ref{fig:add_nodes_2}.
+Given a weighted graph $G_1 = (V, E)$, one possible approach to adapt $G_1$ appears to be to add vertices to $G_1$ on the existing edges, thereby splitting each edge into two edges. A simple example is shown in Figures \ref{fig:add_nodes_1} and \ref{fig:add_nodes_2}. Beginning in Figure \ref{fig:add_nodes_1} with a graph $G_1$, this graph is then transformed into a graph $G_2$ in Figure \ref{fig:add_nodes_2}.
 
 This appears to be roughly the approach followed in one of the experiments described in Appendix A of \cite{pmlr-v130-borovitskiy21a}, as suggested by the following sentence from the aforementioned Appendix:
 
@@ -42,7 +42,7 @@ This appears to be roughly the approach followed in one of the experiments descr
     We bind the traffic congestion data to the graph by adding additional nodes that subdivide existing edges of the graph at the location of the measurement points.
 \end{quote}
 
-One apparent issue with this method is that it's not clear how to determine the edge weights for the new edges. It's also unclear how the original structure of $G_1$ is preserved by $G_2$.
+One apparent issue with this method is that it's not clear how to determine the edge weights for the new edges. It's also unclear how much of the original structure of $G_1$ is preserved by $G_2$.
 
 \begin{figure}
     \begin{center}
@@ -96,13 +96,13 @@ One apparent issue with this method is that it's not clear how to determine the 
             \end{scope}
             \end{tikzpicture}
     \end{center}
-    \caption{This figure shows one possible method to convert the graph $G_1$ from Figure \ref{fig:add_nodes_1} into a graph $G_2$ suitable for a graph Mat\'{e}rn Gaussian process. In graph $G_2$, we have inserted new vertices on each edge of $G_1$ and allowed each new vertex to inherit the appropriate edge. However, it is unclear how the new weights on the new, shortened vertices should be determined.}
+    \caption{This figure shows one possible method to convert the graph $G_1$ from Figure \ref{fig:add_nodes_1} into a graph $G_2$ suitable for a graph Mat\'{e}rn Gaussian process. In graph $G_2$, we have inserted new vertices on each edge of $G_1$ and allowed each new vertex to inherit the appropriate edge weight. However, it is unclear how the new weights on the new, shortened vertices should be determined.}
     \label{fig:add_nodes_2}
 \end{figure}
 
 \subsubsection{Second Method: Convert \texorpdfstring{$G$}{G} Into Its Line Graph \texorpdfstring{$L(G)$}{LofG}}
 
-Informally, the line graph $L(G_1)$ of a graph $G_1$ is a graph such that the edges of $G_1$ are vertices of $L(G_1)$, while the vertices of $G_1$ are edges of $L(G_1)$. (This is an over-simplification.) The second approach is to form the line graph of $G_1$ and then apply the graph Mat\'{e}rn Gaussian process to $L(G_1)$. A simple example is shown in Figure \ref{fig:add_nodes_3}.
+Informally, the line graph $L(G_1)$ of a graph $G_1$ is a graph such that the edges of $G_1$ are vertices of $L(G_1)$, while the vertices of $G_1$ are edges of $L(G_1)$. (This is an over-simplification---one can consult \href{https://en.wikipedia.org/wiki/Line_graph}{Wikipedia}, or any number of textbooks on graph theory, such as \cite{moderngraph}, for more details.) The second approach is to form the line graph of $G_1$ and then apply the graph Mat\'{e}rn Gaussian process to $L(G_1)$. A simple example is shown in Figure \ref{fig:add_nodes_3}.
 
 For the line graph approach, similar to the first method, it is also unclear how to determine the new edge weights. It's also unclear how much of the original structure of $G_1$ is preserved by $L(G_1)$.
 
@@ -135,8 +135,8 @@ For the line graph approach, similar to the first method, it is also unclear how
 Without much experience with graphs, it is difficult to have much intuition for the advantages and disadvantages of each of the two methods described above. Presumably, both should be explored. However, the following observations can be made:
 
 \begin{enumerate}
-    \item Since the graph Mat\'{e}rn Gaussian process will be applied to either $G_2$ or $G_3$, when the actual graph of interest is $G_1$, presumably it is important that the graph to which the process is applied be as structurally similar to $G_1$ as possible, in order to maximize the accuracy of the estimates of the unknown weights of $G_1$. The line graph $G_3$ appears much more similar to $G_1$ than doe $G_2$, but this is a very simple example, and does not necessarily generalize.
-    \item It seems apparent that the first method, resulting in $G_2$, results in a graph that contains more information than graph $G_3$. In graph $G_2$, the number of nodes and weights have both doubled compared to $G_1$, whereas the line graph $G_3$ is the same size a the original graph $G_1$. One would suspect that this might have ramifications for the computational feasibility of the two approaches when the original graph $G_1$ is large.
+    \item Since the graph Mat\'{e}rn Gaussian process will be applied to either $G_2$ or $G_3$, when the actual graph of interest is $G_1$, presumably it is important that the graph to which the process is applied be as structurally similar to $G_1$ as possible, in order to maximize the accuracy of the estimates of the unknown weights of $G_1$. The line graph $G_3$ appears much more similar to $G_1$ than does $G_2$, but this is a very simple example, and does not necessarily generalize.
+    \item It seems apparent that the first method, producing the graph $G_2$, results in a graph that is much bigger than graph $G_3$. In graph $G_2$, the number of nodes and weights have both doubled compared to $G_1$, whereas the line graph $G_3$ is the same size a the original graph $G_1$. One would suspect that this might have ramifications for the computational feasibility of the two approaches when the original graph $G_1$ is large.
 \end{enumerate}
 
 % The graphs in Figures \ref{fig:add_nodes_1}--\ref{fig:add_nodes_3} are admittedly extremely simple examples, but 
@@ -161,7 +161,7 @@ where $\Phi$ is as defined in (\ref{eq:Phi_1}). However, it is not clear how thi
 
 \subsection{Computational Implementation}\label{sec:comp_implem}
 
-It is not clear how training would proceed. For example, given an edge-weighted graph $G$ where some subset of the edge weights are known, and another graph $G'$ that is in a suitable form of the graph Mat\'{e}rn Gaussian process, is the prior process on $G'$ updated to the posterior (given the observed data) one time, or is this done in a more iterative fashion? Perhaps this will depend on the characteristics of the original graph $G$ and how the data are gathered. If the data are gathered in one shot, then perhaps we will only form the posterior process one time, but if the data are gathered incrementally, or the observed weights are changing over time, then presumably we will need to form the posterior process multiple times.
+It is not clear how Gaussian process training would proceed. For example, given an edge-weighted graph $G$ where some subset of the edge weights are known, and another graph $G'$ that is in a suitable form of the graph Mat\'{e}rn Gaussian process, is the prior Gaussian process on $G'$ updated to the posterior (given the observed data) one time, or is this done in a more iterative fashion? Perhaps this will depend on the characteristics of the original graph $G$ and how the data are gathered. If the data are gathered in one shot, then perhaps we will only form the posterior process one time, but if the data are gathered incrementally, or the observed weights are changing over time, then presumably we will need to form the posterior process multiple times.
 
 \subsection{Performance Evaluation}
 
@@ -173,7 +173,7 @@ First, we can use some sort of loss function, e.g. squared loss, by comparing th
     \sum_{i = n + 1}^N \left(w_i - \hat w_i\right)^2.
 \end{equation}
 
-In a somewhat similar vein, we might be interested in confidence intervals concerning our estimates of the unknown weights. It is not clear that any sort of large sample theory makes sense on a finite graph, but perhaps if the edge weights are drawn from probability distributions, then we might observe many weights over time, and perhaps large sample theory could have some application over many observations of the edge weights.
+In a somewhat similar vein, we might be interested in confidence intervals concerning our estimates of the unknown weights. It is not clear that any sort of large sample theory makes sense on a finite graph, but perhaps if the edge weights are drawn from probability distributions, then we might observe many weights sampled from these edges over time, and perhaps large sample theory could have some application over many observations of the edge weights.
 
 Evaluating the quality of our weight estimates via a loss function as in (\ref{eq:loss_1}) makes sense insofar as a smaller loss presumably means our estimates are more useful, but this perspective misses the fact that our real goal is not to estimate the unobserved weights of $G$ accurately, but rather to accurately estimate the \textit{true shortest paths} on $G$ accurately. From this perspective, the precise estimated weight values are not at all relevant if the shortest path estimates they lead to are identical to the true shortest paths. After all, the costs paid when traversing a path on $G$ will reflect the true weight values, not their estimated values.
 
@@ -183,13 +183,21 @@ From this latter perspective, a good metric for performance evaluation would be 
     L(A, B) = \left(\sum_{i = 1}^n w(e_i) - \sum_{i = 1}^{n'} w(e'_i)\right)^2.
 \]
 
-In words, we compare the \textit{true} cost accrued along the \textit{true} shortest path from $A$ to $B$, with the \textit{true} cost accrued long the \textit{estimated} shortest path from $A$ to $B$. Perhaps then the total loss over $G$ could be defined as
+In words, we compare the \textit{true} cost accrued along the \textit{true} shortest path from $A$ to $B$, with the \textit{true} cost accrued long the \textit{estimated} shortest path from $A$ to $B$.
+
+However, note that since $\sum_{i = 1}^n w(e_i) \leq \sum_{i = 1}^{n'} w(e'_i)$ by definition of the shortest path, perhaps it is not necessary to square the difference between the costs of the two paths. Instead we could define
 
 \[
-    L_G = \sum_{\substack{A, B \in V \\ A \neq B}} L(A, B).
+    L(A, B) = \sum_{i = 1}^{n'} w(e'_i) - \sum_{i = 1}^n w(e_i).
 \]
 
-(Presumably $L_G$ as defined above counts each path twice, since $L(A, B)$ and $L(B, A)$ will both be summands, so the criteria for summation above should be restricted to avoid such double counting.)
+Given the above tentative measures of the quality of an estimated shortest path, perhaps the total loss over $G$ could be defined as
+
+\[
+    \text{Loss}(G) = \sum_{\substack{A, B \in V \\ A \neq B}} L(A, B).
+\]
+
+(Presumably $\text{Loss}(G)$ as defined above counts each path twice, since $L(A, B)$ and $L(B, A)$ will both be summands, so the criteria for summation above should be restricted to avoid such double counting. I am not sure how to enforce this condition under the summation symbol.)
 
 % (When all the edge weights of $G$ are known, the problem of computing shortest paths on $G$ has been solved in several different ways \cite{clrs}, )
 
@@ -197,7 +205,7 @@ In words, we compare the \textit{true} cost accrued along the \textit{true} shor
 
 A number of issues were encountered when attempting to implement some of the methods discussed above. These are listed below, not necessarily in chronological order.
 
-The main theme in all the problems encountered below is a lack of understanding of both the theory I am attempting to implement (both Gaussian processes in general, and graph Mat\'{e}rn Gaussian processes in particular), as well as of the tools I tried to use for the implementation (including various Python libraries such as NetworkX, TensorFlow, GPflow, OSMnx, etc.).
+The main theme in the problems encountered below is a lack of understanding of both the theory I attempted to implement (regarding both Gaussian processes in general, and graph Mat\'{e}rn Gaussian processes in particular), as well as of the tools I tried to use for the implementation (including various Python libraries such as NetworkX, TensorFlow, GPflow, OSMnx, etc.).
 
 % -trouble with tools like networkx, gpflow, tensorflow
 % -computer trouble with e.g. osmnx, conda, pip, Windows, Mac
@@ -208,7 +216,7 @@ The main theme in all the problems encountered below is a lack of understanding 
 \begin{enumerate}
     \item The main tool for working with graphs in Python appears to be NetworkX, which I had no familiarity with, so learning how to create and manipulate graphs (for example, adding weights to a graph) involved a lot of trial and error.
     \item I was intending to work with a dataset concerning traffic congestion, as in \cite{pmlr-v130-borovitskiy21a}. The graphs for traffic datasets appear to be typically acquired and manipulated using OSMnx, which according to the official documentation, should be installed with conda. However, the code supplied with the paper \cite{pmlr-v130-borovitskiy21a} is installed via pip, and I do not know how to work with both conda and pip. I initially began working with the code from \cite{pmlr-v130-borovitskiy21a} using pip, but then I tried to switch to conda to use OSMnx. However, I tried using conda to install the packages I had been using with pip, but conda was stuck on ``solving environment'' for about 36 hours before I decided to abort.
-    \item Some of the issues above may be related to the fact that I am borrowing a Windows laptop from the department, and it appears that Windows is generally not supported as well as macOS or Linux for the purposes of this project.
+    \item Some of these issues may be related to the fact that I am borrowing a Windows laptop from the department, and it appears that Windows is generally not supported as well as macOS or Linux for the purposes of this project.
     \item Given the above issues, I decided to pivot and look for alternative datasets of weighted graphs. After some searching, I settled on a dataset concerning a British television show \cite{docwho}, because it seemed to avoid the use of OSMnx.
     \item However, while attempting to prepare the covariance matrix, I encountered ``tensor shape mismatch'' errors. I am not sure if this is due to my lack of understanding of the covariance matrix, or my lack of familiarity with NetworkX, TensorFlow and GPflow.
 \end{enumerate}
@@ -221,9 +229,9 @@ The issues described above are probably all rectificable, at least in principle,
 
 Given the potential novelty of estimating shortest paths on an edge-weighted graph with partially unknown weights, it seems worthwhile to investigate whether any research has been done on this problem.
 
-Searching Google for ``graph estimate shortest path'' returns almost exclusively material concerned with the standard problem of computing shortest paths on an edge-weighted graph with known weights. The only relevant result was \cite{weiss2022generalization}, which seems to be more concerned with the notion that computing the edge weights of a graph may involve non-trivial computation, and therefore introduces the use of weight estimators to compute edge weights with increasing accuracy, at the cost of increased computation time.
+Searching Google for \textit{graph estimate shortest path} returns almost exclusively material concerned with the standard problem of computing shortest paths on an edge-weighted graph with known weights. The only relevant result was \cite{weiss2022generalization}, which seems to be more concerned with the notion that computing the edge weights of a graph may involve non-trivial computation, and therefore introduces the use of weight estimators to compute edge weights with increasing accuracy, at the cost of increased computation time.
 
-Searching Google for ``graph shortest path weight unknown'' again mostly returns material concerned with the standard shortest-path problem. The paper \cite{szepesvari2004shortest} is also concerned with edge weight computation. It is assumed that edge weights are initially unknown, but that there is a method to query the edge weights, and the goal is to minimize the number of queries. The paper \cite{tehrani2013distributed} considers an undirected graph whose edge weights are random variables with unknown distributions, but is concerned with distributed computing.
+Searching Google for \textit{graph shortest path weight unknown} again mostly returns material concerned with the standard shortest-path problem. The paper \cite{szepesvari2004shortest} is also concerned with edge weight computation. It is assumed that edge weights are initially unknown, but that there is a method to query the edge weights, and the goal is to minimize the number of queries. The paper \cite{tehrani2013distributed} considers an undirected graph whose edge weights are random variables with unknown distributions, but is concerned with distributed computing.
 
 Lastly, apparently the problem of finding shortest paths on graphs where the graph structure itself is not entirely known has been studied \cite{papadimitriou1991shortest}; see also the \href{https://en.wikipedia.org/wiki/Canadian_traveller_problem#:~:text=In%20computer%20science%20and%20graph,a%20certain%20%22realization%20restriction.%22}{Canadian traveller problem} on Wikipedia.
 
