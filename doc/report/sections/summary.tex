@@ -10,11 +10,11 @@ The paper \cite{pmlr-v130-borovitskiy21a} introduces a new type of kernel for a 
 
 \subsection{High-level comments on strengths and weaknesses}
 
-The main strength of the paper is the introduction of a new (Mat\'{e}rn) kernel for Gaussian processes on graphs. Furthermore, it is at least of theoretical interest that the new kernel is so closely related to the popular Mat\'{e}rn kernel for Gaussian processes on Euclidean space. The main weaknesses of the paper are twofold. First, the graph Mat\'{e}rn kernel does not appear to meaningfully outperform pre-existing alternatives, although this is not a significant weakness. Second, and perhaps slightly more signifcant, the the mathematical detail in \cite{pmlr-v130-borovitskiy21a} is relatively scarce and it is not obvious that the target audience will be able to reconstruct the mathematical derivations. In relation to other work, \cite{pmlr-v130-borovitskiy21a} is quite similar at least in inspiration to the authors' previous work \cite{NEURIPS2020_92bf5e62}, which applies a very similar trick in the replacement of the Euclidean Laplace operator with a related Laplace operator---the Laplace-Beltrami operator in the case of \cite{NEURIPS2020_92bf5e62}, and the graph Laplacian in the case of \cite{pmlr-v130-borovitskiy21a}.
+The main strength of the paper is the introduction of a new (Mat\'{e}rn) kernel for Gaussian processes on graphs. Furthermore, it is at least of theoretical interest that the new kernel is so closely related to the popular Mat\'{e}rn kernel for Gaussian processes on Euclidean space. The main weaknesses of the paper are twofold. First, the graph Mat\'{e}rn kernel does not appear to meaningfully outperform pre-existing alternatives, although this is not a significant weakness. Second, and perhaps slightly more signifcant, the mathematical detail in \cite{pmlr-v130-borovitskiy21a} is relatively scarce and it is not obvious that the target audience will be able to reconstruct the mathematical derivations. In relation to other work, \cite{pmlr-v130-borovitskiy21a} is quite similar at least in inspiration to the authors' previous work \cite{NEURIPS2020_92bf5e62}, which applies a very similar trick in the replacement of the Euclidean Laplace operator with a related Laplace operator---the Laplace-Beltrami operator in the case of \cite{NEURIPS2020_92bf5e62}, and the graph Laplacian in the case of \cite{pmlr-v130-borovitskiy21a}.
 
 \subsection{Originality}
 
-It is not completely obvious precisely what is novel in the paper in question, because there doesn't appear to be any phrase along the lines of ``We present a novel\dots'' or ``We introduce\dots'' that would make clear exactly what novel work has been done by the authors. It \textit{appears} that, while Gaussian processes on Euclidean space are well known and Gaussian processes on graphs have been studied, the paper in question is the first to essentially port the Mat\'{e}rn kernel version of a Gaussian process from Euclidean space to the graph context. The work is a combination of prior techniques in the sense that both Gaussian processes on graphs, and Mat\'{e}rn kernels on Euclidean space, have both been studied (separately, apparently). If the work in question is the first to introduce Mat\'{e}rn Gaussian processes on graphs, then it obviously differentiates itself from prior work. Regarding the question of adequate citations, I think it depends to a significant extent on the novelty of the work. If the paper \textit{is} the first to introduce Mat\'{e}rn Gaussian processes on graphs, then by dint of its originality, there will be less prior work to cite. If it is not, then the appears to suffer from inadequate citations reflecting this fact, particularly in Sections 2.2 and 3.
+It is not completely obvious precisely what is novel in the paper in question, because there doesn't appear to be any phrase along the lines of ``We present a novel\dots'' or ``We introduce\dots'' that would make clear exactly what novel work has been done by the authors. It \textit{appears} that, while Gaussian processes on Euclidean space are well known and Gaussian processes on graphs have been studied, the paper in question is the first to essentially port the Mat\'{e}rn kernel version of a Gaussian process from Euclidean space to the graph context. The work is a combination of prior techniques in the sense that both Gaussian processes on graphs, and Mat\'{e}rn kernels on Euclidean space, have both been studied (separately, apparently). If the work in question is the first to introduce Mat\'{e}rn Gaussian processes on graphs, then it obviously differentiates itself from prior work. Regarding the question of adequate citations, I think it depends to a significant extent on the novelty of the work. If the paper \textit{is} the first to introduce Mat\'{e}rn Gaussian processes on graphs, then by dint of its originality, there will be less prior work to cite. If it is not, then the paper appears to suffer from inadequate citations reflecting this fact, particularly in Sections 2.2 and 3.
 
 \subsection{Quality}
 
@@ -73,7 +73,7 @@ where $d$ is the Euclidean distance between points $\bm x, \bm x' \in \mathbb R^
 
 \subsubsection{Proposed methodology and theoretical properties}\label{sec:method}
 
-There does not appears to be a ``proposed methodology'' in \cite{pmlr-v130-borovitskiy21a}, insofar as the main contribution is a new kernel for Gaussian processes on graphs---presumably any existing method using Gaussian processes on graphs can be used with the new kernel. Therefore, this section will focus on explaining whatever theoretical aspects of \cite{pmlr-v130-borovitskiy21a} that can reasonably be explained, given space limitations.
+There does not appears to be a ``proposed methodology'' in \cite{pmlr-v130-borovitskiy21a}, insofar as the main contribution is a new kernel for Gaussian processes on graphs---presumably any existing method using Gaussian processes on graphs can be used with the new kernel. Therefore, this section will focus on explaining whatever theoretical aspects of \cite{pmlr-v130-borovitskiy21a} that can reasonably be explained, given space limitations (and limitations of understanding).
 
 The paper \cite{pmlr-v130-borovitskiy21a} refers to the paper \cite{whittle1963stochastic} in support of a claim that a Gaussian process $f$ on $\mathbb R^d$ with Mat\'{e}rn kernel as in (\ref{eq:mat_1}) satisfies the stochastic partial differential equation
 
@@ -81,7 +81,7 @@ The paper \cite{pmlr-v130-borovitskiy21a} refers to the paper \cite{whittle1963s
     \left(\frac{2\nu}{\kappa^2} - \Delta\right)^{\frac{\nu}{2} + \frac{d}{4}}f = \mathcal W,
 \end{equation}
 
-where $\nu$ and $\kappa$ are parameters, $\Delta$ is the Laplace operator and $\mathcal W$ is Gaussian white noise. Unfortunately, the paper \cite{whittle1963stochastic} cannot be located in either the Simon Fraser University Library, or the University of British Columbia library, so this claim cannot investigated in further detail.
+where $\nu$ and $\kappa$ are parameters, $\Delta$ is the Laplace operator and $\mathcal W$ is Gaussian white noise. Unfortunately, the paper \cite{whittle1963stochastic} cannot be located in either the Simon Fraser University library, or the University of British Columbia library, so this claim cannot investigated in further detail.
 
 (I was later able to obtain a copy of \cite{whittle1963stochastic}, thanks to a helpful person on the Internet, but it is probably beyond the scope of this project to seriously analyze the derivation of (\ref{eq:spde_mat}), even if I were able to understand it.)
 
@@ -90,10 +90,10 @@ In order to derive a graph-theoretic version of the Mat\'{e}rn kernel, the autho
 The derivation can be at least partly explained as follows. First assume that the function $\Phi \colon \mathbb R \to \mathbb R$ as defined in \cite{pmlr-v130-borovitskiy21a} is analytic, roughly meaning that it is equal to its Taylor series, so we can write
 
 \begin{equation}\label{eq:phi_1}
-    \Phi(z) = a_0 + a_1 z + a_2 z^2 + \dots \, .
+    \Phi(z) = a_0 + a_1 z + a_2 z^2 + \dots
 \end{equation}
 
-If we then consider a diagonal matrix
+for an appropriate sequence of coefficients $(a_n)_{n = 1}^{\infty}$. If we then consider a diagonal matrix
 
 \[
     \mathbf D = 
@@ -205,7 +205,7 @@ The authors of \cite{pmlr-v130-borovitskiy21a} provide an implementation of thei
 % and the matrix inversion required for bayesian optimization?
 % what else?
 
-\subsubsection{Alternative methods that could be applied}
+\subsection{Alternative methods that could be applied}
 
 % i guess if you wanted to use GPs on graphs,
 % obviously you could just use a different kernel,

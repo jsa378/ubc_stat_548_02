@@ -10,7 +10,7 @@
 
 The proposed project concerned an application of Gaussian processes on graphs to Markov decision processes, the latter being the standard framework for reinforcement learning. The general idea was that a reinforcement learning agent would be tasked with estimating shortest paths on a weighted graph, with only partially known and perhaps evolving weights.
 
-However, it was never precisely clear what type of Markov decision process to choose for this problem and how to define its components. For example, since the graph weights were only partially known, it might make sense to use a partially observable Markov decision process, but it was not clear how to precisely define the partially observable Markov decision process. In an email dated November 2\textsuperscript{nd}, Professor Pleiss suggested a somewhat different setup in which the costs on the graph edges are known, but the rewards on the graph vertices are unknown. This suggestion was presumably made to conform with the fact that the graph Mat\'{e}rn Gaussian process described in \cite{pmlr-v130-borovitskiy21a} is define on the graph vertices, not its edges, but this setup is no longer obviously a partially observable Markov decision process.
+However, it was never precisely clear what type of Markov decision process to choose for this problem and how to define its components. For example, since the graph weights were only partially known, it might make sense to use a partially observable Markov decision process, but it was not clear how to precisely define the partially observable Markov decision process. In an email dated November 2\textsuperscript{nd}, Professor Pleiss suggested a somewhat different setup in which the costs on the graph edges are known, but the rewards on the graph vertices are unknown. This suggestion was presumably made to conform with the fact that the graph Mat\'{e}rn Gaussian process described in \cite{pmlr-v130-borovitskiy21a} is defined on the graph vertices, not its edges, but this setup is no longer obviously a partially observable Markov decision process.
 
 \subsubsection{A New Project Direction: Estimating Shortest Paths}
 
@@ -28,7 +28,7 @@ Given this new project direction, we must consider the following issues:
 
 \subsection{Mathematical Formulation}
 
-An initial stumbling block is that we wish to learn $w \colon E \to \mathbb R$, but the graph Mat\'{e}rn Gaussian process as defined in \cite{pmlr-v130-borovitskiy21a} is defined on the \textit{vertices} of a graph, not its edges. (It would be helpful to understand why we cannot define a Gaussian process on the edges of a weighted graph, since this is would be the na\"{i}ve choice.)
+An initial stumbling block is that we wish to learn $w \colon E \to \mathbb R$, but the graph Mat\'{e}rn Gaussian process as defined in \cite{pmlr-v130-borovitskiy21a} is defined on the \textit{vertices} of a graph, not its edges. (It would be helpful to understand why we cannot define a Gaussian process on the edges of a weighted graph, since this is would be the na\"{i}ve choice. Furthermore, once we have re-defined our problem to concern estimating shortest paths, we no longer need to limit ourselves to the graph Mat\'{e}rn kernel, so the other graph kernels are presumably equally valid for our purposes.)
 
 Given this limitation, we would like to adapt a edge-weighted graph so that its edges become vertices, in some sense. There at at least two ways to do this, which will be described below.
 
@@ -154,7 +154,7 @@ Another point of confusion in the mathematical formulation of the project is the
 There is a brief discussion of the covariance matrix in Appendix B of \cite{pmlr-v130-borovitskiy21a}, which appears to proceed as follows. Given an edge-weighted graph $G = (V, E)$ with non-negative weights, the graph Laplacian $\bm \Delta$ of $G$ is a symmetric, positive semi-definite matrix admitting an eigen-decomposition $\bm \Delta = \mathbf U \bm \Lambda \mathbf U^\intercal$. Given some subset of vertices $\bm x \in V^n$, we define $\mathbf U(\bm x)$ to be the $n \times d$ submatrix of $\mathbf U$ with rows corresponding to the elements of $\bm x$. Then it appears that the covariance matrix $\mathbf K_{\bm {xx}}$ of the graph Mat\'{e}rn Gaussian process is given by
 
 \[
-    \mathbf K_{\bm{xx}} = \mathbf U(\bm x)\Phi(\bm \Lambda)^{-2} \mathbf U^\intercal,
+    \mathbf K_{\bm{xx}} = \mathbf U(\bm x)\Phi(\bm \Lambda)^{-2} \mathbf U(\bm x)^\intercal,
 \]
 
 where $\Phi$ is as defined in (\ref{eq:Phi_1}). However, it is not clear how this result is derived, or whether it is the general form of a covariance matrix for a graph Mat\'{e}rn Gaussian process. It is similarly unclear how this result should actually be used. Is $\bm x$ to be interpreted as the data, i.e. the edge weights of $G$, that were actually observed? This is unclear.
@@ -170,7 +170,7 @@ Suppose we have an edge-weighted graph $G = (V, E)$, and we have observed the we
 First, we can use some sort of loss function, e.g. squared loss, by comparing the estimated weights with their true values. For example, if a graph $G$ has $N$ edge weights, and $1 < n < N$ of these weights are observed, then we can form the estimates $\hat w_{n + 1}, \hat w_{n + 2}, \dots, \hat w_N$ and then compute the loss
 
 \begin{equation}\label{eq:loss_1}
-    \sum_{i = n + 1}^N \left(w_i - \hat w_i\right)^2.
+    \text{Loss}(G) = \sum_{i = n + 1}^N \left(w_i - \hat w_i\right)^2.
 \end{equation}
 
 In a somewhat similar vein, we might be interested in confidence intervals concerning our estimates of the unknown weights. It is not clear that any sort of large sample theory makes sense on a finite graph, but perhaps if the edge weights are drawn from probability distributions, then we might observe many weights sampled from these edges over time, and perhaps large sample theory could have some application over many observations of the edge weights.
@@ -180,7 +180,7 @@ Evaluating the quality of our weight estimates via a loss function as in (\ref{e
 From this latter perspective, a good metric for performance evaluation would be concerned with comparing estimated shortest paths with the true shortest paths. However, it is not immediately clear how to measure the difference between an estimated shortest path from node $A$ to node $B$, and the true shortest path from node $A$ to node $B$. If the true shortest path from node $A$ to node $B$ involves the sequence of edges $(e_1, \dots, e_n)$, and the estimated shortest path from node $A$ to node $B$ involves the edges $(e'_1, \dots, e'_{n'})$, then perhaps one way to measure the difference between these paths would be with the loss
 
 \[
-    L(A, B) = \left(\sum_{i = 1}^n w(e_i) - \sum_{i = 1}^{n'} w(e'_i)\right)^2.
+    \text{Loss}(A, B) = \left(\sum_{i = 1}^n w(e_i) - \sum_{i = 1}^{n'} w(e'_i)\right)^2.
 \]
 
 In words, we compare the \textit{true} cost accrued along the \textit{true} shortest path from $A$ to $B$, with the \textit{true} cost accrued long the \textit{estimated} shortest path from $A$ to $B$.
@@ -188,7 +188,7 @@ In words, we compare the \textit{true} cost accrued along the \textit{true} shor
 However, note that since $\sum_{i = 1}^n w(e_i) \leq \sum_{i = 1}^{n'} w(e'_i)$ by definition of the shortest path, perhaps it is not necessary to square the difference between the costs of the two paths. Instead we could define
 
 \[
-    L(A, B) = \sum_{i = 1}^{n'} w(e'_i) - \sum_{i = 1}^n w(e_i).
+    \text{Loss}(A, B) = \sum_{i = 1}^{n'} w(e'_i) - \sum_{i = 1}^n w(e_i).
 \]
 
 Given the above tentative measures of the quality of an estimated shortest path, perhaps the total loss over $G$ could be defined as
@@ -229,7 +229,7 @@ The issues described above are probably all rectificable, at least in principle,
 
 Given the potential novelty of estimating shortest paths on an edge-weighted graph with partially unknown weights, it seems worthwhile to investigate whether any research has been done on this problem.
 
-Searching Google for \textit{graph estimate shortest path} returns almost exclusively material concerned with the standard problem of computing shortest paths on an edge-weighted graph with known weights. The only relevant result was \cite{weiss2022generalization}, which seems to be more concerned with the notion that computing the edge weights of a graph may involve non-trivial computation, and therefore introduces the use of weight estimators to compute edge weights with increasing accuracy, at the cost of increased computation time.
+Searching Google for \textit{graph estimate shortest path} returns almost exclusively material concerned with the standard problem of computing shortest paths on an edge-weighted graph with known weights. The only relevant result was \cite{weiss2022generalization}, which seems to be more concerned with the notion that computing the edge weights of a graph may be non-trivial, and therefore the authors introduce the use of weight estimators to compute edge weights with increasing accuracy, at the cost of increased computation time.
 
 Searching Google for \textit{graph shortest path weight unknown} again mostly returns material concerned with the standard shortest-path problem. The paper \cite{szepesvari2004shortest} is also concerned with edge weight computation. It is assumed that edge weights are initially unknown, but that there is a method to query the edge weights, and the goal is to minimize the number of queries. The paper \cite{tehrani2013distributed} considers an undirected graph whose edge weights are random variables with unknown distributions, but is concerned with distributed computing.
 
